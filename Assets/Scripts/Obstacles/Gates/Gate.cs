@@ -1,4 +1,3 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Gate : Obstacle
@@ -6,7 +5,7 @@ public class Gate : Obstacle
     public bool Triggered;
 
     #region ISpawnable
-    public override void RestData()
+    public override void ResetData()
     {
         Triggered = false;
     }

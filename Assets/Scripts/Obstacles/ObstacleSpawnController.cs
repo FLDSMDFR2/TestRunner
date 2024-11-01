@@ -34,7 +34,7 @@ public class ObstacleSpawnController : SpawnController
             var script = go.GetComponentInChildren<ISpawnable>();
             if (script != null)
             {
-                script.RestData();
+                script.ResetData();
             }
         }
     }

@@ -1802,6 +1802,8 @@ MonoBehaviour:
   Speed: 5
   TargetingDistance: 50
   TargetingSpeedChange: 2
+  DamagePopup: {fileID: 5618000303727861084, guid: dc8168fcfab7ba7468a316360b40a99e,
+    type: 3}
   Target: {fileID: 0}
   TargetSearch: {fileID: 4681524269241222624}
 --- !u!136 &-4422737553754936932

@@ -31,11 +31,11 @@ public class UIAbilityManager : MonoBehaviour
         {
             if (data.Abilities != null && data.Abilities.Count > i)
             {
-                uIAbilities[i].Icon.sprite = data.Abilities[i].Icon;
+                uIAbilities[i].InitUIAbility(data.Abilities[i]);
             }
             else
             {
-                uIAbilities[i].Icon.sprite = EmptyAbilityIcon;
+                uIAbilities[i].InitUIAbility(EmptyAbilityIcon);
             }
         }
     }

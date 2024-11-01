@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
@@ -66,7 +67,7 @@ public class Player : MonoBehaviour, IDamageable
         SetHealth(MaxHealth);
         Abilities = GetComponentsInChildren<Ability>().ToList();
         GameEventSystem.Player_OnResetData(this);
-        UpdateActiveAbilityIndex(ActiveAbilityIndex);
+        UpdateActiveAbilityIndex(0);
     }
 
     #region IDamageable
@@ -86,7 +87,7 @@ public class Player : MonoBehaviour, IDamageable
         GameEventSystem.Player_OnHealthUpdate(this);
     }
 
-    public void TakeDamage(IDamager damage)
+    public void TakeDamage(IDamager damage, ExperienceBase experienceBase, List<StatusModifier> statusModifiers)
     {
         SetHealth(health - damage.GetDamage());
 

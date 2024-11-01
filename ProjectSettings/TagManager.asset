@@ -17,8 +17,8 @@ TagManager:
   - Wall
   - Enemy
   - Player
-  - 
-  - 
+  - PostProcessing
+  - PostProcessingUI
   - 
   - 
   - 
@@ -43,4 +43,7 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Top
+    uniqueID: 3172897569
     locked: 0

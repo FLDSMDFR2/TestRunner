@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -19,12 +20,19 @@ public class Enemy : MonoBehaviour, IDamageable, IDamager, ISpawnable
 
     public float TargetingSpeedChange;
 
+    public DamagePopup DamagePopup;
+
     [ReadOnlyInspector]
     public GameObject Target;
 
     public GameObject TargetSearch;
 
     protected virtual void Awake()
+    {
+
+    }
+
+    protected virtual void OnEnable()
     {
         if (TargetSearch != null)
         {
@@ -35,6 +43,13 @@ public class Enemy : MonoBehaviour, IDamageable, IDamager, ISpawnable
             if (colliderTrigger) colliderTrigger.OnColliderTriggerEnter += ColliderTrigger_OnColliderTriggerEnter;
         }
     }
+
+    protected virtual void OnDisable()
+    {
+        var colliderTrigger = TargetSearch.GetComponent<ColliderTriggers>();
+        if (colliderTrigger) colliderTrigger.OnColliderTriggerEnter -= ColliderTrigger_OnColliderTriggerEnter;
+    }
+
 
     protected virtual void ColliderTrigger_OnColliderTriggerEnter(Collider collision)
     {
@@ -78,9 +93,24 @@ public class Enemy : MonoBehaviour, IDamageable, IDamager, ISpawnable
         return currentHealth;
     }
 
-    public virtual void TakeDamage(IDamager damage)
+    public virtual void TakeDamage(IDamager damage, ExperienceBase experienceBase, List<StatusModifier> statusModifiers)
     {
-        SetHealth(currentHealth - damage.GetDamage());
+        //if we are over killing then just return
+        if (GetHealth() <= 0) return;
+
+        var newHealth = GetHealth() - damage.GetDamage();
+
+        var totalDamage = damage.GetDamage();
+        if (newHealth <= 0) totalDamage = GetHealth();
+
+        if (experienceBase != null)
+        {
+            experienceBase.GainExperience(totalDamage);
+        }
+
+        if (DamagePopup != null) this.DamagePopup.Create(transform.position, totalDamage, 5, ColorsHelper.GetBaseDamageColor());
+
+        SetHealth(newHealth);
 
         IsEnemyKilled();
     }
@@ -107,7 +137,7 @@ public class Enemy : MonoBehaviour, IDamageable, IDamager, ISpawnable
     #endregion
 
     #region ISpawnable
-    public virtual void RestData()
+    public virtual void ResetData()
     {
         SetHealth(MaxHealth);
         Points = MaxHealth;
@@ -116,7 +146,7 @@ public class Enemy : MonoBehaviour, IDamageable, IDamager, ISpawnable
 
     protected virtual void IsEnemyKilled()
     {
-        if (currentHealth <= 0 && this != null && !gameObject.IsDestroyed())
+        if (GetHealth() <= 0 && this != null && !gameObject.IsDestroyed())
         {
             GameEventSystem.Enemy_OnEnemyKilled(this);
             this.gameObject.SetActive(false);
@@ -130,11 +160,11 @@ public class Enemy : MonoBehaviour, IDamageable, IDamager, ISpawnable
         if (player != null)
         {
             // appley current health as damage
-            player.TakeDamage(this);
+            player.TakeDamage(this, null,null);
 
             // if after we hit the player the player is still alive
             // then we take damage = to current health so we should be dead
-            if (player.GetHealth() > 0) TakeDamage(this); 
+            if (player.GetHealth() > 0) TakeDamage(this, null, null); 
         }
 
         if (collision.gameObject.tag == "Finish")

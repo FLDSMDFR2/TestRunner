@@ -1,5 +1,5 @@
 public interface ISpawnable 
 {
     public abstract string GetName();
-    public abstract void RestData();
+    public abstract void ResetData();
 }

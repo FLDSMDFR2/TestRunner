@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -15,6 +16,8 @@ public class Wall : Obstacle, IDamageable, IDamager, ISpawnable
 
     public int Points;
 
+    public DamagePopup DamagePopup;
+
     #region IDamageable
     public virtual void SetHealth(int health)
     {
@@ -27,9 +30,24 @@ public class Wall : Obstacle, IDamageable, IDamager, ISpawnable
         return currentHealth;
     }
 
-    public void TakeDamage(IDamager damage)
+    public void TakeDamage(IDamager damage, ExperienceBase experienceBase, List<StatusModifier> statusModifiers)
     {
-        SetHealth(currentHealth - damage.GetDamage());
+        //if we are over killing then just return
+        if (GetHealth() <= 0) return;
+
+        var newHealth = GetHealth() - damage.GetDamage();
+
+        var totalDamage = damage.GetDamage();
+        if (newHealth <= 0) totalDamage = GetHealth();
+
+        if (experienceBase != null)
+        {
+            experienceBase.GainExperience(totalDamage);
+        }
+
+        if (DamagePopup != null) this.DamagePopup.Create(transform.position, totalDamage, 5, ColorsHelper.GetBaseDamageColor());
+
+        SetHealth(newHealth);
 
         IsWallDestroyed();
     }
@@ -51,7 +69,7 @@ public class Wall : Obstacle, IDamageable, IDamager, ISpawnable
     #endregion
 
     #region ISpawnable
-    public override void RestData()
+    public override void ResetData()
     {
         SetHealth(MaxHealth);
         Points = MaxHealth;
@@ -76,11 +94,11 @@ public class Wall : Obstacle, IDamageable, IDamager, ISpawnable
         if (player != null)
         {
             // appley current health as damage
-            player.TakeDamage(this);
+            player.TakeDamage(this, null, null);
 
             // if after we hit the player the player is still alive
             // then we take damage = to current health so we should be dead
-            if (player.GetHealth() > 0) TakeDamage(this);
+            if (player.GetHealth() > 0) TakeDamage(this, null, null);
         }
     }
 }

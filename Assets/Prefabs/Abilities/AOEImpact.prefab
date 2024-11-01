@@ -257,8 +257,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Name: AOEImpact
-  Damage: 5
-  Radius: 5
-  Duration: 0.5
+  BaseDamage: 5
+  CurrentDamage: 0
+  BaseRadius: 10
+  CurrentRadius: 0
+  BaseDuration: 3
+  CurrentDuration: 0
   EffectArea: {fileID: 1482719036371405719}
   GroundEffect: {fileID: 1482719037211378020}

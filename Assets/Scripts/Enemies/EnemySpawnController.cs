@@ -33,7 +33,7 @@ public class EnemySpawnController : SpawnController
             var script = enemyObject.GetComponentInChildren<ISpawnable>();
             if (script != null)
             {
-                script.RestData();
+                script.ResetData();
             }
         }
     }

@@ -39,15 +39,22 @@ public class Spawner : MonoBehaviour
     protected virtual IEnumerator CreateSpawnObject()
     {
         // wait for spawn delay
-        yield return new WaitForSeconds(spawnDelayTime);
 
-        while (GameStateData.IsPaused) yield return null;
+        while (GameStateData.IsPaused || GameTimeManager.GetGameSpeed() <= 0) yield return null;
+
+        spawnDelayTime = GetSpawnDelay();
+        while (float.IsInfinity(spawnDelayTime))
+        {
+            spawnDelayTime = GetSpawnDelay();
+            yield return null;
+        }
+
+        yield return new WaitForSeconds(spawnDelayTime);
 
         var controllerIndex = GetController();
         if (controllerIndex >= 0)
             Controllers[controllerIndex].Controller.Spawn();
-
-        spawnDelayTime = GetSpawnDelay();
+     
         StartCoroutine(CreateSpawnObject());
     }
 
@@ -56,7 +63,7 @@ public class Spawner : MonoBehaviour
         var value = rnd.Next(((int)(MinSpawnDelay * 1000)), ((int)(MaxSpawnDelay * 1000)));
 
         // update delay based on game speed, if we speed up we need to spawn faster
-        return  (((float)value) / 1000) / GameTimeManager.GetGameSpeed();
+        return (((float)value) / 1000) / GameTimeManager.GetGameSpeed();
     }
 
     protected virtual int GetController()

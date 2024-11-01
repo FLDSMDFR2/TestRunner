@@ -20,7 +20,7 @@ public class Obstacle : MonoBehaviour, ISpawnable
         return Name;
     }
 
-    public virtual void RestData(){ }
+    public virtual void ResetData(){ }
     #endregion
 
     protected virtual float MoveSpeed()
